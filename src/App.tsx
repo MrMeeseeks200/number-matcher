@@ -1,43 +1,9 @@
 import { Box, Typography, Button, Container } from '@mui/material';
-import { ApiResponse, Result } from './types';
-import { useEffect, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import useApp from './useApp';
+import { useState } from 'react';
 
 function App() {
-    const [sessionId, setSessionId] = useState<string>('');
-
-    useEffect(() => {
-        const token = uuidv4();
-        setSessionId(token);
-    }, []);
-
-    const [result, setResult] = useState<Result | null>(null);
-    const [history, setHistory] = useState<Result[]>([]);
-
-    const fetchNumbers = async () => {
-
-        try {
-            const response = await fetch(
-                `https://kso9vgq60c.execute-api.us-east-1.amazonaws.com/dev/fetch-numbers?session-id=${sessionId}`,
-                {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
-            const data: ApiResponse = await response.json();
-
-            setResult(data.result);
-            setHistory(data.history);
-        } catch (error) {
-            console.error('Error fetching numbers:', error);
-        }
-    };
-
-    console.log('Current Result:', result);
-    console.log('History:', history);
-    console.log('Session ID:', sessionId);
+    const { result, history, fetchNumbers, spinning } = useApp();
 
     return (
         <Box
@@ -48,6 +14,11 @@ function App() {
                 justifyContent: 'center',
                 bgcolor: '#282c34',
                 color: 'white',
+                animation: spinning ? 'spin 1s ease-in-out infinite' : 'none',
+                '@keyframes spin': {
+                    '0%': { transform: 'rotate(0deg)' },
+                    '100%': { transform: 'rotate(360deg)' },
+                },
             }}
         >
             <Container maxWidth="md" sx={{ py: 4 }}>
@@ -95,7 +66,6 @@ function App() {
                         </Button>
                     </Box>
                 </Box>
-                {/* Display the two number in the result side by side */}
                 {result && (
                     <Box sx={{ textAlign: 'center' }}>
                         <Box
@@ -118,8 +88,6 @@ function App() {
                         </Typography>
                     </Box>
                 )}
-                {/* Display history of results in the format 1 & 2  -  2 & 3 etc*/}
-
                 <Box sx={{ textAlign: 'center', marginTop: 4 }}>
                     {history.length > 0 && (
                         <Typography variant="h6" sx={{ marginTop: 2 }}>
