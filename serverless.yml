@@ -12,6 +12,7 @@ custom:
   s3Sync:
     - bucketName: ${self:custom.s3Bucket}
       localDir: build
+  numbersApiUrl: ${ssm:/number-matcher/${self:provider.stage}/numbersApiUrl}
 
 resources:
   Resources:

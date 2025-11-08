@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { ApiResponse, Result } from "./types";
+import { config } from "./config";
 
 const useApp = () => {
     const [sessionId, setSessionId] = useState<string>('');
@@ -15,10 +16,14 @@ const useApp = () => {
     const [spinning, setSpinning] = useState(false);
 
     const fetchNumbers = async () => {
-
+        const url = config.numbersApiUrl;
+        if (!url) {
+            console.error('API URL is not defined');
+            return;
+        }
         try {
             const response = await fetch(
-                `https://kso9vgq60c.execute-api.us-east-1.amazonaws.com/dev/fetch-numbers?session-id=${sessionId}`,
+                `${url}?session-id=${sessionId}`,
                 {
                     method: 'GET',
                     headers: {
